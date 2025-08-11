@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom update scheduling
 - Rollback functionality for failed updates
 
-## [1.0.0] - 2024-12-11
+## [1.0.0] - 2025 - 08 - 12
 
 ### Added
 - **Core Functionality**
@@ -176,4 +176,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-© 2024 Fredon - FredonBytes
+© 2025 Patrik Fredon - FredonBytes
