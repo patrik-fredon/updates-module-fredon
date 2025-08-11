@@ -1,0 +1,34 @@
+// -*- mode: jsonc -*-
+{
+  "layer": "top", // Waybar at top layer
+  "position": "top", // Waybar position (top|bottom|left|right)
+  "height": 50, // Waybar height (to be removed for auto height)
+  // "width": 1280, // Waybar width
+  "spacing": 4, // Gaps between modules (4px)
+  // Choose the order of the modules
+  "modules-left": ["custom/arch", "group/hardware"],
+  "modules-center": ["clock", "tray", "hyprland/workspaces"],
+  "modules-right": [
+    "idle_inhibitor",
+    "bluetooth",
+    "pulseaudio",
+    "network",
+    "custom/notification",
+    "custom/updates"
+  ],
+  //Modules configuration
+  "custom/updates": {
+    "format": "{}",
+    "interval": 600,
+    "exec": "~/.config/waybar/scripts/arch_updates_simple.py --check",
+    "exec-if": "test -f ~/.config/waybar/scripts/arch_updates_simple.py",
+    "on-click": "~/.config/waybar/scripts/arch_updates_simple.py --update",
+    "on-click-right": "~/.config/waybar/scripts/arch_updates.py --menu",
+    "return-type": "json",
+    "signal": 8,
+    "tooltip": true,
+    "escape": true
+  },
+
+  "include": ["~/.config/waybar/modules.json"]
+}

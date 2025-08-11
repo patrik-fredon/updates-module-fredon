@@ -1,0 +1,113 @@
+{
+  "update_settings": {
+    "check_interval": 600,
+    "package_managers": ["pacman", "yay", "paru"],
+    "icons": {
+      "no_updates": "✅",
+      "updates_available": "📦",
+      "updating": "🔄",
+      "error": "⚠️"
+    },
+    "colors": {
+      "no_updates": "#588157",
+      "updates_available": "#f9c74f",
+      "updating": "#277da1",
+      "error": "#e63946"
+    }
+  },
+  "menu_buttons": [
+    {
+      "key": "full_update",
+      "name": "System Update",
+      "description": "Update all packages (pacman + AUR)",
+      "command": "sudo pacman -Syu && yay -Syu",
+      "icon": "🔄",
+      "requires_confirmation": true,
+      "terminal": true
+    },
+    {
+      "key": "pacman_update",
+      "name": "Pacman Update",
+      "description": "Update official repository packages",
+      "command": "sudo pacman -Syu",
+      "icon": "📦",
+      "requires_confirmation": true,
+      "terminal": true
+    },
+    {
+      "key": "aur_update",
+      "name": "AUR Update",
+      "description": "Update AUR packages",
+      "command": "yay -Syu --aur",
+      "icon": "🏗️",
+      "requires_confirmation": true,
+      "terminal": true
+    },
+    {
+      "key": "clean_cache",
+      "name": "Clean Cache",
+      "description": "Clear package cache and temp files",
+      "command": "sudo pacman -Sc && yay -Sc && sudo rm -rf /tmp/* && sudo journalctl --vacuum-time=7d",
+      "icon": "🧹",
+      "requires_confirmation": true,
+      "terminal": true
+    },
+    {
+      "key": "check_journals",
+      "name": "Check System Logs",
+      "description": "Check journalctl for errors",
+      "command": "journalctl -p 3 -xb",
+      "icon": "📋",
+      "requires_confirmation": false,
+      "terminal": true
+    },
+    {
+      "key": "disk_cleanup",
+      "name": "Disk Optimization",
+      "description": "NVME/HDD optimization and cleanup",
+      "command": "sudo fstrim -av && sudo sync",
+      "icon": "💽",
+      "requires_confirmation": true,
+      "terminal": true
+    },
+    {
+      "key": "system_info",
+      "name": "System Info",
+      "description": "Display system information",
+      "command": "neofetch",
+      "icon": "ℹ️",
+      "requires_confirmation": false,
+      "terminal": true
+    },
+    {
+      "key": "reboot",
+      "name": "Reboot System",
+      "description": "Restart the system",
+      "command": "sudo reboot",
+      "icon": "🔄",
+      "requires_confirmation": true,
+      "terminal": false
+    }
+  ],
+  "terminal_settings": {
+    "default_terminal": "kitty",
+    "terminal_args": ["--config", "NONE", "-o", "background_opacity=0.9", "-e"],
+    "color_scheme": {
+      "success": "\\033[92m",
+      "warning": "\\033[93m",
+      "error": "\\033[91m",
+      "info": "\\033[94m",
+      "reset": "\\033[0m",
+      "bold": "\\033[1m"
+    }
+  },
+  "gui_settings": {
+    "popup_width": 300,
+    "popup_height": 400,
+    "transparency": 0.9,
+    "blur_background": true,
+    "button_padding": 10,
+    "font_size": 12,
+    "theme": "dark"
+  }
+}

@@ -1,0 +1,266 @@
+* {
+  /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
+  font-family: "AdwaitaMono Nerd Font", "Font Awesome 6 Brands",
+    "Material Symbols Outlined", "JetBrainsMono Nerd Font Propo",
+    "Font Awesome 6 Free", sans-serif;
+  font-size: 14px;
+  transition: background-color 0.3s ease-out;
+}
+
+window#waybar {
+  background: transparent;
+  color: #fff;
+  transition: background-color 0.5s;
+}
+
+.modules-left,
+.modules-center {
+  background: transparent;
+  margin: 0px 5px;
+  padding: 0px 5px;
+  border-radius: 15px;
+}
+
+.modules-right {
+  background: rgba(35, 35, 46, 0.6);
+  border-bottom: 1px solid #000;
+  color: #fff;
+  padding: 0px 5px;
+  border-radius: 15px;
+}
+
+#custom-notification {
+  font-family: "NotoSansMono Nerd Font";
+  margin: 0px 5px;
+  padding: 0px 5px;
+}
+
+#tray,
+#window,
+#workspaces {
+  background: rgba(35, 35, 46, 0.6);
+  border-bottom: 1px solid #000;
+  color: #f97a19;
+  margin: 0px 5px;
+  padding: 0px 5px;
+  border-radius: 15px;
+}
+
+#clock {
+  background: rgba(35, 35, 46, 0.6);
+  border-bottom: 1px solid #000;
+  color: #fff;
+  margin: 0px 5px;
+  padding: 0px 5px;
+  border-radius: 15px;
+}
+
+#bluetooth,
+#idle_inhibitor,
+#battery,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#mode,
+#scratchpad,
+#power-profiles-daemon,
+#language,
+#mpd {
+  margin: 0px 5px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+#clock:hover,
+#bluetooth:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#disk:hover,
+#temperature:hover,
+#backlight:hover,
+#network:hover,
+#pulseaudio:hover,
+#wireplumber:hover,
+#custom-media:hover,
+#tray:hover,
+#mode:hover,
+#idle_inhibitor:hover,
+#scratchpad:hover,
+#power-profiles-daemon:hover,
+#language:hover,
+#mpd:hover {
+  background: rgba(26, 27, 38, 0.9);
+}
+
+#workspaces button {
+  background: transparent;
+  font-weight: 400;
+  font-size: 8pt;
+  color: #fff;
+}
+
+#disk,
+#cpu,
+#memory {
+  background: transparent;
+  color: #f97a19;
+  margin: 0px 5px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+#hardware {
+  background: rgba(35, 35, 46, 0.6);
+  border-bottom: 1px solid #000;
+  color: #f97a19;
+  margin: 0px 5px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+#workspaces button.active {
+  background: transparent;
+  color: #f97a19;
+}
+
+#workspaces button:hover {
+  background: transparent;
+  color: #f97a19;
+  box-shadow: none;
+}
+
+/* Arch Updates Module Styling */
+#custom-updates {
+  background-color: transparent;
+  padding: 0 10px;
+  border-radius: 15px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  min-width: 40px;
+}
+
+#custom-updates:hover {
+  background: rgba(26, 27, 38, 0.9);
+}
+
+/* No updates available - Green styling */
+#custom-updates.no-updates {
+  color: #588157;
+  background: rgba(88, 129, 87, 0.1);
+  border: 1px solid rgba(88, 129, 87, 0.3);
+}
+
+/* Updates available - Orange/Yellow styling with pulse animation */
+#custom-updates.updates-available {
+  color: #f9c74f;
+  background: rgba(249, 199, 79, 0.1);
+  border: 1px solid rgba(249, 199, 79, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Currently updating - Blue styling with rotating animation */
+#custom-updates.updating {
+  color: #277da1;
+  background: rgba(39, 125, 161, 0.1);
+  border: 1px solid rgba(39, 125, 161, 0.3);
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state - Red styling with shake animation */
+#custom-updates.error {
+  color: #e63946;
+  background: rgba(230, 57, 70, 0.1);
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  animation: shake 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(3px);
+  }
+}
+
+/* Tooltip styling for update module */
+tooltip#custom-updates {
+  background: rgba(35, 35, 46, 0.95);
+  color: #fff;
+  border: 1px solid #f97a19;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Button hover effects for better interactivity */
+#custom-updates.no-updates:hover {
+  background: rgba(88, 129, 87, 0.2);
+  border-color: rgba(88, 129, 87, 0.5);
+}
+
+#custom-updates.updates-available:hover {
+  background: rgba(249, 199, 79, 0.2);
+  border-color: rgba(249, 199, 79, 0.5);
+}
+
+#custom-updates.updating:hover {
+  background: rgba(39, 125, 161, 0.2);
+  border-color: rgba(39, 125, 161, 0.5);
+}
+
+#custom-updates.error:hover {
+  background: rgba(230, 57, 70, 0.2);
+  border-color: rgba(230, 57, 70, 0.5);
+}
+
+/* Additional styling for better visual hierarchy */
+#custom-updates.updates-available::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, transparent, rgba(249, 199, 79, 0.3), transparent);
+  border-radius: 17px;
+  z-index: -1;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
