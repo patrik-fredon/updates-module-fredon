@@ -2,18 +2,6 @@
 """
 Arch Linux Update Manager for Waybar
 A comprehensive update checker and system maintenance tool for Hyprland/Waybar
-╔═══════════════════════════════════════════════════════════════════════╗
-║                                                                       ║
-║           ███████╗██████╗ ███████╗██████╗  ██████╗ ███╗   ██╗         ║
-║           ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔═══██╗████╗  ██║         ║
-║           █████╗  ██████╔╝█████╗  ██║  ██║██║   ██║██╔██╗ ██║         ║
-║           ██╔══╝  ██╔══██╗██╔══╝  ██║  ██║██║   ██║██║╚██╗██║         ║
-║           ██║     ██║  ██║███████╗██████╔╝╚██████╔╝██║ ╚████║         ║
-║           ╚═╝     ╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝         ║
-║                                                                       ║
-║                    D O T F I L E S   M A N A G E R                    ║
-║                 “Et in tenebris codicem inveni lucem.”                ║
-╚═══════════════════════════════════════════════════════════════════════╝
 """
 
 import json
@@ -27,7 +15,7 @@ from typing import Dict, List, Optional, Tuple
 import argparse
 
 try:
-    import FreeSimpleGUI as sg
+    import PySimpleGUI as sg
 
     GUI_AVAILABLE = True
 except ImportError:
@@ -48,79 +36,85 @@ except ImportError:
 
 class ArchUpdateManager:
     def __init__(self, config_path: str = None):
-        self.script_dir = Path(__file__).parent
-        self.config_path = config_path or self.script_dir / "update_config.json"
+        self.script_dir = Path(__file__).parent.resolve()
+        self.config_path = self._determine_config_path(config_path)
         self.cache_file = self.script_dir / ".update_cache.json"
         self.config = self.load_config()
         self.last_check = 0
         self.update_count = {"pacman": 0, "yay": 0, "paru": 0, "total": 0}
         self.current_status = "checking"
 
+    def _determine_config_path(self, config_path: str = None) -> Path:
+        """Determine config file path with fallback options"""
+        if config_path:
+            return Path(config_path).resolve()
+        
+        # Check environment variable first
+        env_config = os.getenv('WAYBAR_UPDATE_CONFIG')
+        if env_config:
+            env_path = Path(env_config).resolve()
+            if env_path.exists():
+                return env_path
+        
+        # Default to script directory
+        return self.script_dir / "update_config.json"
+
     def load_config(self) -> Dict:
-        """Load configuration from JSON file"""
+        """Load configuration from JSON file with fallback to defaults"""
         try:
-            with open(self.config_path, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            # Return default config if file not found
-            return {
-                "update_settings": {
-                    "check_interval": 600,
-                    "package_managers": ["pacman", "yay", "paru"],
-                    "icons": {
-                        "no_updates": "✅",
-                        "updates_available": "📦",
-                        "updating": "🔄",
-                        "error": "⚠️",
-                    },
-                    "colors": {
-                        "no_updates": "#588157",
-                        "updates_available": "#f9c74f",
-                        "updating": "#277da1",
-                        "error": "#e63946",
-                    },
-                },
-                "gui_settings": {
-                    "transparency": 0.9,
-                    "popup_width": 350,
-                    "popup_height": 400,
-                    "button_padding": 10,
-                },
-                "terminal_settings": {
-                    "default_terminal": "kitty",
-                    "terminal_args": ["-e"],
-                    "color_scheme": {
-                        "info": "\\033[36m",
-                        "success": "\\033[32m",
-                        "error": "\\033[31m",
-                        "bold": "\\033[1m",
-                        "reset": "\\033[0m",
-                    },
-                },
-                "menu_buttons": [
-                    {
-                        "key": "full_update",
-                        "name": "System Update",
-                        "icon": "🔄",
-                        "description": "Update all packages (pacman + AUR)",
-                        "command": "sudo pacman -Syu && yay -Syu",
-                        "requires_confirmation": True,
-                        "terminal": True,
-                    },
-                    {
-                        "key": "cache_clean",
-                        "name": "Clean Cache",
-                        "icon": "🧹",
-                        "description": "Clean package cache",
-                        "command": "sudo pacman -Scc && yay -Scc",
-                        "requires_confirmation": True,
-                        "terminal": True,
-                    },
-                ],
-            }
+            if self.config_path.exists():
+                with open(self.config_path, "r") as f:
+                    return json.load(f)
+            else:
+                print(f"Config file not found at {self.config_path}, using defaults", file=sys.stderr)
+                return self._get_default_config()
         except json.JSONDecodeError as e:
-            print(f"Invalid JSON in config file: {e}", file=sys.stderr)
-            sys.exit(1)
+            print(f"Invalid JSON in config file {self.config_path}: {e}", file=sys.stderr)
+            print("Using default configuration", file=sys.stderr)
+            return self._get_default_config()
+        except (OSError, IOError) as e:
+            print(f"Error reading config file {self.config_path}: {e}", file=sys.stderr)
+            print("Using default configuration", file=sys.stderr)
+            return self._get_default_config()
+
+    def _get_default_config(self) -> Dict:
+        """Return default configuration"""
+        return {
+            "update_settings": {
+                "check_interval": 600,
+                "package_managers": ["pacman", "yay", "paru"],
+                "icons": {
+                    "no_updates": "✅",
+                    "updates_available": "📦",
+                    "updating": "🔄",
+                    "error": "⚠️",
+                },
+                "colors": {
+                    "no_updates": "#588157",
+                    "updates_available": "#f9c74f",
+                    "updating": "#277da1",
+                    "error": "#e63946",
+                },
+            },
+            "gui_settings": {
+                "transparency": 0.9,
+                "popup_width": 300,
+                "popup_height": 400,
+                "button_padding": 10,
+            },
+            "terminal_settings": {
+                "default_terminal": "kitty",
+                "terminal_args": ["-e"],
+                "color_scheme": {
+                    "reset": "\\033[0m",
+                    "bold": "\\033[1m",
+                    "info": "\\033[34m",
+                    "success": "\\033[32m",
+                    "error": "\\033[31m",
+                },
+            },
+            "menu_buttons": [],
+        }
 
     def get_package_manager_priority(self) -> str:
         """Determine which package manager to use based on availability"""
@@ -140,11 +134,7 @@ class ArchUpdateManager:
                 updates = result.stdout.strip().split("\n")
                 return len([u for u in updates if u.strip()]), updates
             return 0, []
-        except (
-            subprocess.TimeoutExpired,
-            subprocess.SubprocessError,
-            FileNotFoundError,
-        ):
+        except (subprocess.TimeoutExpired, subprocess.SubprocessError):
             return 0, []
 
     def check_aur_updates(self, manager: str = "yay") -> Tuple[int, List[str]]:
@@ -159,11 +149,7 @@ class ArchUpdateManager:
                 updates = result.stdout.strip().split("\n")
                 return len([u for u in updates if u.strip()]), updates
             return 0, []
-        except (
-            subprocess.TimeoutExpired,
-            subprocess.SubprocessError,
-            FileNotFoundError,
-        ):
+        except (subprocess.TimeoutExpired, subprocess.SubprocessError):
             return 0, []
 
     def check_all_updates(self) -> Dict[str, int]:
@@ -209,18 +195,20 @@ class ArchUpdateManager:
                     cached = json.load(f)
                     self.update_count = cached.get("counts", self.update_count)
                     self.last_check = cached.get("timestamp", 0)
-        except (json.JSONDecodeError, FileNotFoundError):
-            pass
+        except (json.JSONDecodeError, FileNotFoundError, OSError, IOError) as e:
+            print(f"Warning: Could not load cache file {self.cache_file}: {e}", file=sys.stderr)
         return self.update_count
 
     def cache_updates(self):
         """Cache update counts with timestamp"""
         cache_data = {"counts": self.update_count, "timestamp": time.time()}
         try:
+            # Ensure parent directory exists
+            self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.cache_file, "w") as f:
                 json.dump(cache_data, f)
-        except IOError:
-            pass
+        except (OSError, IOError) as e:
+            print(f"Warning: Could not write cache file {self.cache_file}: {e}", file=sys.stderr)
 
     def get_waybar_output(self) -> str:
         """Generate JSON output for Waybar"""
@@ -326,19 +314,30 @@ read
 
             # Write temporary script
             temp_script = self.script_dir / ".temp_command.sh"
-            with open(temp_script, "w") as f:
-                f.write(script_content)
-            os.chmod(temp_script, 0o755)
-
             try:
+                # Ensure parent directory exists
+                temp_script.parent.mkdir(parents=True, exist_ok=True)
+                with open(temp_script, "w") as f:
+                    f.write(script_content)
+                os.chmod(temp_script, 0o755)
+
                 # Execute in terminal
                 full_cmd = [terminal_cmd] + terminal_args + [str(temp_script)]
                 subprocess.run(full_cmd, check=False)
                 return True
+            except (OSError, IOError) as e:
+                print(f"Error creating temporary script: {e}", file=sys.stderr)
+                return False
+            except FileNotFoundError as e:
+                print(f"Terminal not found: {terminal_cmd}. Error: {e}", file=sys.stderr)
+                return False
             finally:
                 # Clean up
-                if temp_script.exists():
-                    temp_script.unlink()
+                try:
+                    if temp_script.exists():
+                        temp_script.unlink()
+                except OSError:
+                    pass  # Ignore cleanup errors
         else:
             # Execute directly
             try:
@@ -480,7 +479,7 @@ read
 
 def main():
     parser = argparse.ArgumentParser(description="Arch Linux Update Manager for Waybar")
-    parser.add_argument("--config", help="Path to config file")
+    parser.add_argument("--config", help="Path to config file (overrides environment variable and defaults)")
     parser.add_argument(
         "--check", action="store_true", help="Check for updates and output JSON"
     )
@@ -489,17 +488,21 @@ def main():
 
     args = parser.parse_args()
 
-    manager = ArchUpdateManager(args.config)
+    try:
+        manager = ArchUpdateManager(args.config)
 
-    if args.check:
-        print(manager.get_waybar_output())
-    elif args.menu:
-        manager.show_popup_menu()
-    elif args.update:
-        manager.run_interactive_update()
-    else:
-        # Default: output for Waybar
-        print(manager.get_waybar_output())
+        if args.check:
+            print(manager.get_waybar_output())
+        elif args.menu:
+            manager.show_popup_menu()
+        elif args.update:
+            manager.run_interactive_update()
+        else:
+            # Default: output for Waybar
+            print(manager.get_waybar_output())
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

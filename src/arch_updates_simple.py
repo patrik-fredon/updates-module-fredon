@@ -2,18 +2,6 @@
 """
 Simplified Arch Linux Update Checker for Waybar
 Core functionality without GUI dependencies
-╔═══════════════════════════════════════════════════════════════════════╗
-║                                                                       ║
-║           ███████╗██████╗ ███████╗██████╗  ██████╗ ███╗   ██╗         ║
-║           ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔═══██╗████╗  ██║         ║
-║           █████╗  ██████╔╝█████╗  ██║  ██║██║   ██║██╔██╗ ██║         ║
-║           ██╔══╝  ██╔══██╗██╔══╝  ██║  ██║██║   ██║██║╚██╗██║         ║
-║           ██║     ██║  ██║███████╗██████╔╝╚██████╔╝██║ ╚████║         ║
-║           ╚═╝     ╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═══╝         ║
-║                                                                       ║
-║                    D O T F I L E S   M A N A G E R                    ║
-║                 “Et in tenebris codicem inveni lucem.”                ║
-╚═══════════════════════════════════════════════════════════════════════╝
 """
 
 import json
@@ -28,41 +16,66 @@ import argparse
 
 class ArchUpdateChecker:
     def __init__(self, config_path: str = None):
-        self.script_dir = Path(__file__).parent
-        self.config_path = config_path or self.script_dir / "update_config.json"
+        self.script_dir = Path(__file__).parent.resolve()
+        self.config_path = self._determine_config_path(config_path)
         self.cache_file = self.script_dir / ".update_cache.json"
         self.config = self.load_config()
         self.last_check = 0
         self.update_count = {"pacman": 0, "yay": 0, "paru": 0, "total": 0}
 
+    def _determine_config_path(self, config_path: str = None) -> Path:
+        """Determine config file path with fallback options"""
+        if config_path:
+            return Path(config_path).resolve()
+        
+        # Check environment variable first
+        env_config = os.getenv('WAYBAR_UPDATE_CONFIG')
+        if env_config:
+            env_path = Path(env_config).resolve()
+            if env_path.exists():
+                return env_path
+        
+        # Default to script directory
+        return self.script_dir / "update_config.json"
+
     def load_config(self) -> Dict:
-        """Load configuration from JSON file"""
+        """Load configuration from JSON file with fallback to defaults"""
         try:
-            with open(self.config_path, "r") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            # Return default config if file not found
-            return {
-                "update_settings": {
-                    "check_interval": 600,
-                    "package_managers": ["pacman", "yay", "paru"],
-                    "icons": {
-                        "no_updates": "✅",
-                        "updates_available": "📦",
-                        "updating": "🔄",
-                        "error": "⚠️",
-                    },
-                    "colors": {
-                        "no_updates": "#588157",
-                        "updates_available": "#f9c74f",
-                        "updating": "#277da1",
-                        "error": "#e63946",
-                    },
-                }
-            }
+            if self.config_path.exists():
+                with open(self.config_path, "r") as f:
+                    return json.load(f)
+            else:
+                print(f"Config file not found at {self.config_path}, using defaults", file=sys.stderr)
+                return self._get_default_config()
         except json.JSONDecodeError as e:
-            print(f"Invalid JSON in config file: {e}", file=sys.stderr)
-            sys.exit(1)
+            print(f"Invalid JSON in config file {self.config_path}: {e}", file=sys.stderr)
+            print("Using default configuration", file=sys.stderr)
+            return self._get_default_config()
+        except (OSError, IOError) as e:
+            print(f"Error reading config file {self.config_path}: {e}", file=sys.stderr)
+            print("Using default configuration", file=sys.stderr)
+            return self._get_default_config()
+
+    def _get_default_config(self) -> Dict:
+        """Return default configuration"""
+        return {
+            "update_settings": {
+                "check_interval": 600,
+                "package_managers": ["pacman", "yay", "paru"],
+                "icons": {
+                    "no_updates": "✅",
+                    "updates_available": "📦",
+                    "updating": "🔄",
+                    "error": "⚠️",
+                },
+                "colors": {
+                    "no_updates": "#588157",
+                    "updates_available": "#f9c74f",
+                    "updating": "#277da1",
+                    "error": "#e63946",
+                },
+            }
+        }
 
     def check_pacman_updates(self) -> Tuple[int, List[str]]:
         """Check for pacman updates"""
@@ -143,18 +156,20 @@ class ArchUpdateChecker:
                     cached = json.load(f)
                     self.update_count = cached.get("counts", self.update_count)
                     self.last_check = cached.get("timestamp", 0)
-        except (json.JSONDecodeError, FileNotFoundError):
-            pass
+        except (json.JSONDecodeError, FileNotFoundError, OSError, IOError) as e:
+            print(f"Warning: Could not load cache file {self.cache_file}: {e}", file=sys.stderr)
         return self.update_count
 
     def cache_updates(self):
         """Cache update counts with timestamp"""
         cache_data = {"counts": self.update_count, "timestamp": time.time()}
         try:
+            # Ensure parent directory exists
+            self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.cache_file, "w") as f:
                 json.dump(cache_data, f)
-        except IOError:
-            pass
+        except (OSError, IOError) as e:
+            print(f"Warning: Could not write cache file {self.cache_file}: {e}", file=sys.stderr)
 
     def get_waybar_output(self) -> str:
         """Generate JSON output for Waybar"""
@@ -188,18 +203,29 @@ class ArchUpdateChecker:
         # Use the improved terminal script
         terminal_script = self.script_dir / "update_terminal.sh"
 
-        if terminal_script.exists():
-            try:
-                subprocess.run([str(terminal_script)])
-            except subprocess.SubprocessError as e:
-                print(f"Failed to launch terminal update: {e}", file=sys.stderr)
-        else:
-            print("Terminal update script not found", file=sys.stderr)
+        if not terminal_script.exists():
+            print(f"Terminal update script not found at {terminal_script}", file=sys.stderr)
+            print("Please ensure update_terminal.sh exists in the script directory", file=sys.stderr)
+            return
+
+        if not os.access(terminal_script, os.X_OK):
+            print(f"Terminal update script is not executable: {terminal_script}", file=sys.stderr)
+            print(f"Run: chmod +x {terminal_script}", file=sys.stderr)
+            return
+
+        try:
+            subprocess.run([str(terminal_script)], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Terminal update script failed with exit code {e.returncode}", file=sys.stderr)
+        except subprocess.SubprocessError as e:
+            print(f"Failed to launch terminal update: {e}", file=sys.stderr)
+        except FileNotFoundError:
+            print(f"Terminal update script not found or not executable: {terminal_script}", file=sys.stderr)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Arch Linux Update Checker for Waybar")
-    parser.add_argument("--config", help="Path to config file")
+    parser.add_argument("--config", help="Path to config file (overrides environment variable and defaults)")
     parser.add_argument(
         "--check", action="store_true", help="Check for updates and output JSON"
     )
@@ -207,13 +233,17 @@ def main():
 
     args = parser.parse_args()
 
-    checker = ArchUpdateChecker(args.config)
+    try:
+        checker = ArchUpdateChecker(config_path=args.config)
 
-    if args.update:
-        checker.execute_terminal_update()
-    else:
-        # Default: output for Waybar
-        print(checker.get_waybar_output())
+        if args.update:
+            checker.execute_terminal_update()
+        else:
+            # Default: output for Waybar
+            print(checker.get_waybar_output())
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

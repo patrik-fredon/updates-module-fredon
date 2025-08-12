@@ -17,18 +17,20 @@
     "custom/updates"
   ],
   //Modules configuration
+  // Path Configuration: All script paths use $HOME/.config/waybar for portability
+  // This allows the configuration to work regardless of the user's home directory
   "custom/updates": {
     "format": "{}",
     "interval": 600,
-    "exec": "~/.config/waybar/scripts/arch_updates_simple.py --check",
-    "exec-if": "test -f ~/.config/waybar/scripts/arch_updates_simple.py",
-    "on-click": "~/.config/waybar/scripts/arch_updates_simple.py --update",
-    "on-click-right": "~/.config/waybar/scripts/arch_updates.py --menu",
+    "exec": "$HOME/.config/waybar/scripts/arch_updates_simple.py --check",
+    "exec-if": "test -f $HOME/.config/waybar/scripts/arch_updates_simple.py",
+    "on-click": "$HOME/.config/waybar/scripts/arch_updates_simple.py --update",
+    "on-click-right": "$HOME/.config/waybar/scripts/arch_updates.py --menu",
     "return-type": "json",
     "signal": 8,
     "tooltip": true,
     "escape": true
   },
 
-  "include": ["~/.config/waybar/modules.json"]
+  "include": ["./modules.json"]
 }

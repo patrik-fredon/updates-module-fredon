@@ -1,25 +1,25 @@
 {
-  "custom/updates": {
-    "format": "{}",
-    "interval": 600,
-    "exec": "~/.config/waybar/scripts/arch_updates_simple.py --check",
-    "exec-if": "test -f ~/.config/waybar/scripts/arch_updates_simple.py",
-    "on-click": "~/.config/waybar/scripts/arch_updates_simple.py --update",
-    "on-click-right": "~/.config/waybar/scripts/arch_updates.py --menu",
-    "return-type": "json",
-    "signal": 8,
+  "custom/arch": {
+    "format": "     ",
     "tooltip": true,
-    "escape": true
+    "tooltip-format": "I was Fredon",
+    "on-click": "sh $HOME/.config/waybar/scripts/fredon-menu.sh"
   },
+  "disk": {
+    "interval": 30,
+    "format": " {percentage_free}% | 󰨿",
+    "path": "/"
+  },
+
   "hyprland/workspaces": {
     "disable-scroll": false,
     "all-outputs": true,
     "warp-on-scroll": false,
     "format": "{icon}",
     "format-icons": {
-      "urgent": "",
-      "active": "",
-      "default": ""
+      "urgent": "",
+      "active": "",
+      "default": ""
     },
     "persistent-workspaces": {
       "1": [],
@@ -28,6 +28,15 @@
       "4": [],
       "5": []
     }
+  },
+  "custom/dotfiles": {
+    "format": "{}",
+    "interval": 30,
+    "exec": "$HOME/github/dotfiles-manager/scripts/waybar_backup.sh",
+    "on-click": "$HOME/github/dotfiles-manager/scripts/waybar_backup.sh backup",
+    "on-click-middle": "$HOME/github/dotfiles-manager/scripts/waybar_backup.sh github",
+    "on-click-right": "$HOME/github/dotfiles-manager/scripts/waybar_backup.sh sync",
+    "return-type": "json"
   },
   "bluetooth": {
     "format": "  ",
@@ -44,40 +53,44 @@
   "idle_inhibitor": {
     "format": "{icon} ",
     "format-icons": {
-      "activated": "",
-      "deactivated": ""
+      "activated": "",
+      "deactivated": ""
     }
   },
   "tray": {
     "icon-size": 21,
-    "spacing": 10
+    "spacing": 10,
+    "icons": {
+      "blueman": "bluetooth"
+    }
   },
   "pulseaudio": {
     "format": "{icon} {volume}%",
-    "format-bluetooth": "{icon} {volume}%  {format_source}",
-    "format-bluetooth-muted": " {icon} {format_source}",
-    "format-muted": " {format_source}",
-    "format-source": " {volume}%",
-    "format-source-muted": "",
+    "format-bluetooth": "{icon} {volume}%  {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
+    "format-source": " {volume}%",
+    "format-source-muted": "",
     "format-icons": {
-      "headphone": "",
-      "hands-free": "",
-      "headset": "",
-      "phone": "",
-      "portable": "",
-      "car": "",
-      "default": ["", "", ""]
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
     },
     "on-click": "pavucontrol"
   },
   "network": {
-    "format-wifi": "  {essid} ({signalStrength}%)",
-    "format-ethernet": "{ipaddr}/{cidr} ",
-    "tooltip-format": "{ifname} via {gwaddr} ",
-    "format-linked": "{ifname} (No IP) ",
+    "format-wifi": "  {essid} ({signalStrength}%)",
+    "format-ethernet": "{ipaddr}/{cidr} ",
+    "tooltip-format": "{ifname} via {gwaddr} ",
+    "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "Disconnected ⚠",
     "on-click": "kitty nmtui"
   },
+
   "group/hardware": {
     "orientation": "inherit",
     "children-class": "hardware",
@@ -85,24 +98,19 @@
     "on-click": "kitty btop"
   },
   "cpu": {
-    "format": "󰩀 |   {usage}%",
+    "format": "󰩀 |   {usage}%",
     "tooltip": true
   },
   "memory": {
-    "format": "  {}%",
+    "format": "  {}%",
     "tooltip": true
   },
   "temperature": {
     "interval": 10,
     "hwmon-path": "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon2/temp1_input",
     "critical-threshold": 100,
-    "format-critical": " {temperatureC} |",
-    "format": " {temperatureC}°C |"
-  },
-  "disk": {
-    "interval": 30,
-    "format": " {percentage_free}% | 󰨿",
-    "path": "/"
+    "format-critical": " {temperatureC} |",
+    "format": " {temperatureC}°C |"
   },
   "battery": {
     "states": {
@@ -111,10 +119,13 @@
     },
     "format": "{icon} {capacity}%",
     "format-full": "{icon} {capacity}%",
-    "format-charging": "  {capacity}%",
-    "format-plugged": "  {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
     "format-alt": "{time}  {icon}",
-    "format-icons": ["", "", "", "", ""]
+    "format-icons": ["", "", "", "", ""]
+  },
+  "battery#bat2": {
+    "bat": "BAT2"
   },
   "clock": {
     "format": "  {:%H:%M  |  %e %B} ",
@@ -125,14 +136,14 @@
     "tooltip": false,
     "format": "{icon}",
     "format-icons": {
-      "notification": "<span foreground='red'><sup></sup></span>",
-      "none": "",
-      "dnd-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-none": "",
-      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "inhibited-none": "",
-      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-inhibited-none": ""
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": ""
     },
     "return-type": "json",
     "exec-if": "which swaync-client",

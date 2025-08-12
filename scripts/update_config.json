@@ -3,7 +3,7 @@
     "check_interval": 600,
     "package_managers": ["pacman", "yay", "paru"],
     "icons": {
-      "no_updates": "✅",
+      "no_updates": "📦",
       "updates_available": "📦",
       "updating": "🔄",
       "error": "⚠️"
@@ -106,7 +106,7 @@
     "popup_height": 400,
     "transparency": 0.9,
     "blur_background": true,
-    "button_padding": 10,
+    "button_padding": 5,
     "font_size": 12,
     "theme": "dark"
   }

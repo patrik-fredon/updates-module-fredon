@@ -28,7 +28,6 @@ window#waybar {
   padding: 0px 5px;
   border-radius: 15px;
 }
-
 #custom-notification {
   font-family: "NotoSansMono Nerd Font";
   margin: 0px 5px;
@@ -103,7 +102,6 @@ window#waybar {
   font-size: 8pt;
   color: #fff;
 }
-
 #disk,
 #cpu,
 #memory {
@@ -113,7 +111,6 @@ window#waybar {
   padding: 5px;
   border-radius: 15px;
 }
-
 #hardware {
   background: rgba(35, 35, 46, 0.6);
   border-bottom: 1px solid #000;
@@ -122,7 +119,6 @@ window#waybar {
   padding: 5px;
   border-radius: 15px;
 }
-
 #workspaces button.active {
   background: transparent;
   color: #f97a19;
@@ -133,11 +129,93 @@ window#waybar {
   color: #f97a19;
   box-shadow: none;
 }
+/* Image paths are relative since CSS and SVG files are in the same directory */
+#custom-arch {
+  font-size: 30px;
+  background-image: url("./favicon.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 0px 5px;
+  padding: 0px 5px;
+}
 
-/* Arch Updates Module Styling */
-#custom-updates {
+/* Bluetooth module styling with relative image paths */
+#bluetooth {
+  background-image: url("./bluetooth.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 2px;
+  padding: 2px;
+}
+#bluetooth.disabled {
+  background-image: url("./bluetooth-disabled.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 2px;
+  padding: 2px;
+}
+#bluetooth.off {
+  background-image: url("./bluetooth-off.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 2px;
+  padding: 2px;
+}
+#bluetooth.on {
+  background-image: url("./bluetooth-on.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 2px;
+  padding: 2px;
+}
+#bluetooth.connected {
+  background-image: url("./bluetooth-connected.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: #f4d9e1;
+  margin: 2px;
+  padding: 2px;
+}
+/* custom dotfiles Module */
+#custom-dotfiles {
   background-color: transparent;
   padding: 0 10px;
+  border-radius: 5px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+#custom-dotfiles.default {
+  color: white;
+}
+
+#custom-dotfiles.working {
+  color: #f9c74f;
+}
+
+#custom-dotfiles.success {
+  color: #588157;
+}
+
+#custom-dotfiles.error {
+  color: #e63946;
+}
+
+/* Arch Updates Module */
+#custom-updates {
+  background-color: transparent;
+  padding: 0 5px;
   border-radius: 15px;
   margin: 0 5px;
   transition: all 0.3s ease;
@@ -149,65 +227,27 @@ window#waybar {
   background: rgba(26, 27, 38, 0.9);
 }
 
-/* No updates available - Green styling */
 #custom-updates.no-updates {
   color: #588157;
-  background: rgba(88, 129, 87, 0.1);
-  border: 1px solid rgba(88, 129, 87, 0.3);
+  background: transparent;
 }
 
-/* Updates available - Orange/Yellow styling with pulse animation */
 #custom-updates.updates-available {
   color: #f9c74f;
   background: rgba(249, 199, 79, 0.1);
   border: 1px solid rgba(249, 199, 79, 0.3);
-  animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Currently updating - Blue styling with rotating animation */
 #custom-updates.updating {
   color: #277da1;
   background: rgba(39, 125, 161, 0.1);
   border: 1px solid rgba(39, 125, 161, 0.3);
-  animation: rotate 1s linear infinite;
 }
 
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Error state - Red styling with shake animation */
 #custom-updates.error {
   color: #e63946;
   background: rgba(230, 57, 70, 0.1);
   border: 1px solid rgba(230, 57, 70, 0.3);
-  animation: shake 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(3px);
-  }
 }
 
 /* Tooltip styling for update module */
@@ -218,49 +258,4 @@ tooltip#custom-updates {
   border-radius: 10px;
   padding: 10px;
   font-size: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* Button hover effects for better interactivity */
-#custom-updates.no-updates:hover {
-  background: rgba(88, 129, 87, 0.2);
-  border-color: rgba(88, 129, 87, 0.5);
-}
-
-#custom-updates.updates-available:hover {
-  background: rgba(249, 199, 79, 0.2);
-  border-color: rgba(249, 199, 79, 0.5);
-}
-
-#custom-updates.updating:hover {
-  background: rgba(39, 125, 161, 0.2);
-  border-color: rgba(39, 125, 161, 0.5);
-}
-
-#custom-updates.error:hover {
-  background: rgba(230, 57, 70, 0.2);
-  border-color: rgba(230, 57, 70, 0.5);
-}
-
-/* Additional styling for better visual hierarchy */
-#custom-updates.updates-available::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, transparent, rgba(249, 199, 79, 0.3), transparent);
-  border-radius: 17px;
-  z-index: -1;
-  animation: glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  0% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.8;
-  }
 }
